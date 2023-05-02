@@ -37,6 +37,10 @@ public class UserDto {
   private boolean isActive;
   private Role role;
 
+  public Boolean isActive() {
+    return this.isActive;
+  }
+
   public String fullName() {
     return firstName != null ? firstName.concat(" ").concat(lastName) : "";
   }
