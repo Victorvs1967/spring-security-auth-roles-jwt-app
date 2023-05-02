@@ -1,6 +1,5 @@
 package com.vvs.springsecurityauthrolesjwtapp.handler;
 
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -11,6 +10,8 @@ import com.vvs.springsecurityauthrolesjwtapp.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
 @RequiredArgsConstructor
@@ -24,8 +25,37 @@ public class UserHandler {
       .switchIfEmpty(Mono.error(new RuntimeException("Wrong Credentional...")))
       .flatMap(credentionals -> ServerResponse
         .ok()
-        .contentType(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
         .body(userService.getUsers(), UserDto.class));
+  }
+
+  public Mono<ServerResponse> userDetail(ServerRequest request) {
+    return jwtUtil.validateToken(getToken(request))
+      .switchIfEmpty(Mono.error(new RuntimeException("Wrong Credentionals...")))
+      .flatMap(credentionals -> ServerResponse
+        .ok()
+        .contentType(APPLICATION_JSON)
+        .body(userService.getUser(request.pathVariable("username")), UserDto.class));
+  }
+
+  public Mono<ServerResponse> userUpdate(ServerRequest request) {
+    return jwtUtil.validateToken(getToken(request))
+      .switchIfEmpty(Mono.error(new RuntimeException("Wrong Credentionals...")))
+      .flatMap(credentionals -> request.bodyToMono(UserDto.class)
+        .map(userService::updateUser)
+        .flatMap(userDto -> ServerResponse
+          .ok()
+          .contentType(APPLICATION_JSON)
+          .body(userDto, UserDto.class)));
+  }
+
+  public Mono<ServerResponse> userDelete(ServerRequest request) {
+    return jwtUtil.validateToken(getToken(request))
+      .switchIfEmpty(Mono.error(new RuntimeException("Wrong Credentionals...")))
+      .flatMap(credentionals -> ServerResponse
+        .ok()
+        .contentType(APPLICATION_JSON)
+        .body(userService.deleteUser(request.pathVariable("username")), UserDto.class));
   }
 
   private String getToken(ServerRequest request) {
