@@ -1,5 +1,7 @@
 package com.vvs.springsecurityauthrolesjwtapp.security;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,7 +23,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final static String[] WHITELIST_AUTH_URL = {"/auth/signup", "/auth/login"};
+  private final static List<String> ALLOWED_ORIGINS = List.of("*", "http://localhost:4200");
+  private final static String[] WHITELIST_AUTH_URL = {"/auth/signup", "/auth/login", "/mail/sendmail"};
 
   private final AuthenticationManager authenticationManager;
   private final SecurityContextRepository securityContextRepository;
@@ -29,13 +32,11 @@ public class SecurityConfig {
   public CorsConfigurationSource createCorsConfigurationSource() {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration config = new CorsConfiguration();
-
     config.setAllowCredentials(true);
-    config.addAllowedOrigin("*");
+    config.setAllowedOrigins(ALLOWED_ORIGINS);
     config.addAllowedHeader("*");
     config.addAllowedMethod("*");
     source.registerCorsConfiguration("/**", config);
-
     return source;
   }
 
@@ -54,6 +55,8 @@ public class SecurityConfig {
       .authenticationManager(authenticationManager)
       .securityContextRepository(securityContextRepository)
       .authorizeExchange()
+      .pathMatchers(HttpMethod.PUT).hasAnyAuthority("ADMIN", "MODERATOR")
+      .pathMatchers(HttpMethod.DELETE).hasAnyAuthority("ADMIN", "MODERATOR")
       .pathMatchers(HttpMethod.OPTIONS).permitAll()
       .pathMatchers(WHITELIST_AUTH_URL).permitAll()
       .anyExchange().authenticated()
