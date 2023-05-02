@@ -30,5 +30,8 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
+.DS_Store
 .vscode/
 /backup
+/mongodb_data
+.env
