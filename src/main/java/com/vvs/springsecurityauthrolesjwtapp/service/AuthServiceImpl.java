@@ -28,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
     return isUserExist(userDto.getUsername())
       .filter(userExist -> !userExist)
       .switchIfEmpty(Mono.error(new RuntimeException("User already exist...")))
-      .doOnNext(_boolean -> isEmailExist(userDto.getEmail())
+      .flatMap(userExist -> isEmailExist(userDto.getEmail())
         .filter(emailExist -> !emailExist)
         .switchIfEmpty(Mono.error(new RuntimeException("Email already exist..."))))
       .map(_boolean -> userDto)

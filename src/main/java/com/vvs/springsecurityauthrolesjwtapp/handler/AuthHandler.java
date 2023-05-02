@@ -21,12 +21,11 @@ public class AuthHandler {
 
   public Mono<ServerResponse> signUp(ServerRequest request) {
     return request.bodyToMono(UserDto.class)
-      .flatMap(userDto -> auth.signUp(userDto))
+      .flatMap(credentials -> auth.signUp(credentials))
       .flatMap(userDto -> ServerResponse
-        .ok()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(userDto, UserDto.class)
-        .switchIfEmpty(Mono.error(new RuntimeException("Sign Up Falture...")))
+      .ok()
+      .contentType(MediaType.APPLICATION_JSON)
+      .body(Mono.just(userDto), UserDto.class)
       );
   }
 
@@ -36,8 +35,7 @@ public class AuthHandler {
       .flatMap(response -> ServerResponse
         .ok()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(response, ResponseDto.class)
-        .switchIfEmpty(Mono.error(new RuntimeException("Login Falture...")))
+        .body(Mono.just(response), ResponseDto.class)
       );
   }
 }

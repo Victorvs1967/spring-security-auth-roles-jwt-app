@@ -14,7 +14,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class AuthRouter {
 
   @Bean
-  public RouterFunction<ServerResponse>  authRouterFunction(AuthHandler handler) {
+  public RouterFunction<ServerResponse>  authRouterFunction(final AuthHandler handler) {
     return route()
       .nest(path("/auth"), builder -> builder
         .POST("/signup", handler::signUp)
