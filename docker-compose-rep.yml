@@ -19,6 +19,9 @@ services:
       - MONGO_URI=mongo_db
       - MAIL_LOGIN=${MAIL_LOGIN}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
     ports:
       - 4000:8080
     depends_on:
