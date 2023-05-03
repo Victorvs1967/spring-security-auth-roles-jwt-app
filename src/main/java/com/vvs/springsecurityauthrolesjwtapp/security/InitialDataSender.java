@@ -9,9 +9,12 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.vvs.springsecurityauthrolesjwtapp.dto.MailResponseDto;
 import com.vvs.springsecurityauthrolesjwtapp.model.Role;
 import com.vvs.springsecurityauthrolesjwtapp.model.User;
 import com.vvs.springsecurityauthrolesjwtapp.repository.UserRepository;
+import com.vvs.springsecurityauthrolesjwtapp.service.MailConfig;
+import com.vvs.springsecurityauthrolesjwtapp.service.MailService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,8 @@ public class InitialDataSender implements ApplicationListener<ApplicationStarted
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final MailConfig config;
+  private final MailService mailService;
 
   @Override
   public void onApplicationEvent(ApplicationStartedEvent event) {
@@ -52,8 +57,15 @@ public class InitialDataSender implements ApplicationListener<ApplicationStarted
         .isActive(true)
       .build();
 
+    MailResponseDto mail = MailResponseDto
+      .builder()
+        .mailTo(config.getUsername())
+        .subject("created ADMIN user") .message("Admin user created successfully...")
+      .build();
+
     return userRepository
       .save(user)
+      .doOnNext(admin -> mailService.sendMail(mail))
       .doOnNext(admin -> log.info("Admin user created successfully..."));
   }
 }
