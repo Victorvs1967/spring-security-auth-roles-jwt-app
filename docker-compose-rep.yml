@@ -12,11 +12,12 @@ services:
 
   backend_api:
     container_name: backend_api_container
-    image: victorvsm/backend_api:1.0
+    image: victorvsm/backend_api:latest
     env_file:
       - .env
     environment:
       - MONGO_URI=mongo_db
+      - HOST_URL=${HOST_URL}
       - MAIL_LOGIN=${MAIL_LOGIN}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
