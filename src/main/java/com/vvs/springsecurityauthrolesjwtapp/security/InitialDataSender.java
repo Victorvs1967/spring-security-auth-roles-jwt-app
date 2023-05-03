@@ -3,7 +3,8 @@ package com.vvs.springsecurityauthrolesjwtapp.security;
 import java.time.Instant;
 import java.util.Date;
 
-import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,17 +20,20 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class InitialDataSender implements ApplicationListener<ApplicationStartingEvent> {
+public class InitialDataSender implements ApplicationListener<ApplicationStartedEvent> {
 
+  @Value("${admin.username}")
   private String username;
+  @Value("${admin.password}")
   private String password;
+  @Value("${admin.email}")
   private String email;
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
-  public void onApplicationEvent(ApplicationStartingEvent event) {
+  public void onApplicationEvent(ApplicationStartedEvent event) {
     userRepository
       .findByUsername(username)
       .switchIfEmpty(createAdmin())
