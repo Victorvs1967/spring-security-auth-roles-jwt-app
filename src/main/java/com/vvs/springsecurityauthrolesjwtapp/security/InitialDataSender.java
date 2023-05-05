@@ -40,7 +40,7 @@ public class InitialDataSender implements ApplicationListener<ApplicationStarted
   @Override
   public void onApplicationEvent(ApplicationStartedEvent event) {
     userRepository
-      .findByUsername(username)
+      .findAll()
       .switchIfEmpty(createAdmin())
       .subscribe();
   }
